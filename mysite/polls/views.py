@@ -10,6 +10,9 @@ from django.views.decorators.csrf import csrf_exempt
 import re
 from random import random
 from .forms import UploadFileForm
+from mysite.settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY_ID, AWS_STORAGE_BUCKET_NAME
+import boto3
+from boto3.session import Session
 
 def json_build(raw_data) :
     j = {}
@@ -1092,6 +1095,7 @@ def fetch_student_quiz_results(request ):
         print(e)        
     return JsonResponse(response, safe=False )
 
+
 @csrf_exempt
 def uploadTest(request):
     print("testing goes")        
@@ -1102,7 +1106,9 @@ def uploadTest(request):
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             handle_uploaded_file(request.FILES['file'])
+            uploadFileToS3(request)
             response['status']=1
+            print("sending response as 1")   
             return JsonResponse(response, safe=False )
     else:
         form = UploadFileForm()
@@ -1116,10 +1122,25 @@ def handle_uploaded_file(f):
             destination.write(chunk)
 
 
+def uploadFileToS3(request):
+    # POST
+    print("upload trying") 
+  #  fileToUpload = request.FILES['file']
+   # cloudFilename = 'name.jpg' 
 
+    #session = boto3.session.Session(aws_access_key_id='AKIA4YODRYSE6636P5NZ',
+                                    #aws_secret_access_key='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')
+    #s3 = session.resource('s3')
+    #s3.Bucket('quesion-bank-for-quiz').put_object(Key=cloudFilename, Body=fileToUpload)
 
+    out_img = request.FILES['file']
+    out_img.seek(0)
+    session = boto3.Session(
+    aws_access_key_id='AKIA4YODRYSE6636P5NZ',
+    aws_secret_access_key='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',
+    )
+    s3 = session.resource('s3')
 
-
-
-
-
+    s3.Bucket('quesion-bank-for-quiz').put_object(Key='name2.jpg', Body=out_img)
+    print("uploaded")   
+    return 1

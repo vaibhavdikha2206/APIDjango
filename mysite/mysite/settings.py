@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'polls',
     'corsheaders',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -128,3 +129,11 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY_ID = os.environ.get('AWS_SECRET_ACCESS_KEY_ID')
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
